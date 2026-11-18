@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore Docks & Berths — AnchorDrop</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="brand-container">
+      <a href="index.html" class="brand-logo">
+        <svg class="brand-icon-svg" viewBox="0 0 24 24">
+          <circle cx="12" cy="5" r="2.5"></circle>
+          <line x1="12" y1="7.5" x2="12" y2="21"></line>
+          <path d="M5 13a7 7 0 0 0 14 0"></path>
+          <line x1="8" y1="10" x2="16" y2="10"></line>
+        </svg>
+        <div class="brand-text">
+          <div class="brand-name">Anchor<span>Drop</span></div>
+          <div class="brand-tag">Slip Network</div>
+        </div>
+      </a>
+    </div>
+    <div class="nav-links">
+      <!-- Populated dynamically by js/app.js -->
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="section-header" style="text-align:left; margin-bottom:28px;">
+      <span class="section-eyebrow">Waterfront Marketplace</span>
+      <h2>Explore Available Docks & Berths</h2>
+      <p style="margin:0;">Browse verified private moorings and marina slips. Filter by vessel dimensions, depth, and location.</p>
+    </div>
+
+    <!-- Filter Bar -->
+    <section class="filter-bar">
+      <div class="filter-group">
+        <label for="filterLocation">Search Location / Waterway</label>
+        <input type="text" id="filterLocation" placeholder="e.g. Miami, New River...">
+      </div>
+
+      <div class="filter-group">
+        <label for="filterType">Dock Type</label>
+        <select id="filterType">
+          <option value="">All Dock Types</option>
+          <option value="Floating Dock">Floating Dock</option>
+          <option value="Marina Slip">Marina Slip</option>
+          <option value="Fixed Dock">Fixed Dock</option>
+          <option value="Piling Dock">Piling Dock</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="filterMinLength">My Boat Length (ft)</label>
+        <input type="number" id="filterMinLength" placeholder="e.g. 40" min="10" max="150">
+      </div>
+
+      <div class="filter-group">
+        <label for="filterMinDepth">Min Water Depth (ft)</label>
+        <input type="number" id="filterMinDepth" placeholder="e.g. 6" min="3" max="25">
+      </div>
+
+      <div class="filter-group">
+        <label for="filterMaxPrice">Max Daily Rate ($)</label>
+        <input type="number" id="filterMaxPrice" placeholder="e.g. 150" min="20" max="500">
+      </div>
+
+      <div class="filter-group" style="display:flex; flex-direction:row; gap:8px;">
+        <button class="btn btn-primary btn-sm" id="btnFilter" style="flex:1;">Apply Filters</button>
+        <button class="btn btn-secondary btn-sm" id="btnResetFilter">Reset</button>
+      </div>
+    </section>
+
+    <!-- Results Header -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+      <h3 style="font-size:18px; color:var(--navy);" id="resultsCount">Loading available docks...</h3>
+      <span style="font-size:13px; color:var(--text-muted);">Real-time compatibility check available on booking</span>
+    </div>
+
+    <!-- Docks Grid -->
+    <div class="cards-grid" id="docksGrid">
+      <!-- Injected by JavaScript -->
+    </div>
+  </main>
+
+  <!-- Booking & Compatibility Modal -->
+  <div class="modal-overlay" id="bookingModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+      <h3 id="modalDockTitle" style="margin-bottom:4px; font-size:22px;">Reserve Dock</h3>
+      <p id="modalDockLocation" style="color:var(--text-muted); font-size:14px; margin-bottom:16px;"></p>
+
+      <!-- Dock Spec Badges -->
+      <div id="modalDockSpecs" class="card-specs" style="margin-bottom:18px;">
+        <!-- Specs injected here -->
+      </div>
+
+      <!-- Booking Form -->
+      <form id="bookingForm" onsubmit="handleBookingSubmit(event)">
+        <input type="hidden" id="selectedDockId">
+
+        <div class="form-group">
+          <label for="selectVessel">Select Your Vessel *</label>
+          <select id="selectVessel" onchange="runLiveCompatibilityCheck()" required>
+            <!-- Injected dynamically with boater's vessels -->
+          </select>
+          <small id="vesselPrompt" style="color:var(--text-muted); font-size:12px;"></small>
+        </div>
+
+        <!-- Live Compatibility Result Indicator -->
+        <div id="compatibilityBox" class="compat-box" style="display:none;"></div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label for="bookingStartDate">Arrival Date *</label>
+            <input type="date" id="bookingStartDate" required>
+          </div>
+          <div class="form-group">
+            <label for="bookingEndDate">Departure Date *</label>
+            <input type="date" id="bookingEndDate" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="bookingNotes">Special Requests / Shore Power Needs</label>
+          <textarea id="bookingNotes" rows="2" placeholder="e.g. 50A shore power cord needed, late evening arrival..."></textarea>
+        </div>
+
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+          <div>
+            <div style="font-size:12px; color:var(--text-muted);">Estimated Total</div>
+            <div id="modalTotalEstimate" style="font-size:20px; font-weight:700; color:var(--navy);">$0</div>
+          </div>
+          <button type="submit" class="btn btn-primary" id="submitBookingBtn">Submit Booking Request</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="padding:0;">
+      <div class="footer-bottom">
+        © 2026 AnchorDrop. All rights reserved. Real-time marketplace demo for college viva presentation.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script>
+    let currentSelectedDock = null;
+
+    document.addEventListener("DOMContentLoaded", () => {
+      renderDocksList();
+
+      document.getElementById("btnFilter").addEventListener("click", renderDocksList);
+      document.getElementById("btnResetFilter").addEventListener("click", () => {
+        document.getElementById("filterLocation").value = "";
+        document.getElementById("filterType").value = "";
+        document.getElementById("filterMinLength").value = "";
+        document.getElementById("filterMinDepth").value = "";
+        document.getElementById("filterMaxPrice").value = "";
+        renderDocksList();
+      });
+
+      // Recalculate price on date change
+      document.getElementById("bookingStartDate").addEventListener("change", calculateEstimatedTotal);
+      document.getElementById("bookingEndDate").addEventListener("change", calculateEstimatedTotal);
+    });
+
+    function renderDocksList() {
+      const locationVal = document.getElementById("filterLocation").value.toLowerCase().trim();
+      const typeVal = document.getElementById("filterType").value;
+      const minLengthVal = Number(document.getElementById("filterMinLength").value) || 0;
+      const minDepthVal = Number(document.getElementById("filterMinDepth").value) || 0;
+      const maxPriceVal = Number(document.getElementById("filterMaxPrice").value) || Infinity;
+
+      let docks = AnchorDropDB.getDocks();
+
+      const filtered = docks.filter(d => {
+        if (locationVal && !d.location.toLowerCase().includes(locationVal) && !d.waterway.toLowerCase().includes(locationVal) && !d.name.toLowerCase().includes(locationVal)) {
+          return false;
+        }
+        if (typeVal && d.dockType !== typeVal) {
+          return false;
+        }
+        if (minLengthVal > 0 && d.maxLength < minLengthVal) {
+          return false;
+        }
+        if (minDepthVal > 0 && d.minDepth < minDepthVal) {
+          return false;
+        }
+        if (d.dailyPrice > maxPriceVal) {
+          return false;
+        }
+        return true;
+      });
+
+      document.getElementById("resultsCount").innerText = `Showing ${filtered.length} Available Berth${filtered.length === 1 ? '' : 's'}`;
+
+      const grid = document.getElementById("docksGrid");
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div style="grid-column: 1/-1; text-align:center; padding:50px 20px; background:#fff; border-radius:8px; border:1px dashed var(--border-color);">
+            <h3>No docking spaces match your filter criteria.</h3>
+            <p style="color:var(--text-muted); margin-top:8px;">Try clearing some filters or searching a different area.</p>
+          </div>
+        `;
+        return;
+      }
+
+      grid.innerHTML = filtered.map(dock => `
+        <div class="card">
+          <div class="card-image-wrap">
+            <img src="${dock.image}" alt="${dock.name}">
+            <span class="card-badge">${dock.dockType}</span>
+          </div>
+          <div class="card-body">
+            <h3 class="card-title">${dock.name}</h3>
+            <p class="card-location">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              ${dock.location} • <span style="color:var(--primary); font-weight:600;">${dock.waterway}</span>
+            </p>
+            <div class="card-specs">
+              <span>Length: <strong>${dock.maxLength} ft</strong></span>
+              <span>Beam: <strong>${dock.maxBeam} ft</strong></span>
+              <span>Depth: <strong>${dock.minDepth} ft</strong></span>
+              <span>Host: <strong>${dock.hostName.split(' ')[0]}</strong></span>
+            </div>
+            <div class="card-amenities">
+              ${dock.amenities.map(a => `<span class="amenity-tag">${a}</span>`).join('')}
+            </div>
+            <div class="card-footer">
+              <div class="card-price">$${dock.dailyPrice} <span>/ day</span></div>
+              <button class="btn btn-primary btn-sm" onclick="openBookingModal('${dock.id}')">Check Fit & Book</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openBookingModal(dockId) {
+      const dock = AnchorDropDB.getDockById(dockId);
+      if (!dock) return;
+      currentSelectedDock = dock;
+
+      document.getElementById("selectedDockId").value = dock.id;
+      document.getElementById("modalDockTitle").innerText = dock.name;
+      document.getElementById("modalDockLocation").innerText = `${dock.location} • ${dock.waterway}`;
+      document.getElementById("modalDockSpecs").innerHTML = `
+        <span>Max Length: <strong>${dock.maxLength} ft</strong></span>
+        <span>Max Beam: <strong>${dock.maxBeam} ft</strong></span>
+        <span>Min Depth: <strong>${dock.minDepth} ft</strong></span>
+        <span>Daily Rate: <strong>$${dock.dailyPrice}</strong></span>
+      `;
+
+      // Set default dates: today + 2 days
+      const today = new Date();
+      const afterTwoDays = new Date();
+      afterTwoDays.setDate(today.getDate() + 2);
+      document.getElementById("bookingStartDate").value = today.toISOString().split('T')[0];
+      document.getElementById("bookingEndDate").value = afterTwoDays.toISOString().split('T')[0];
+
+      // Populate vessels
+      const vessels = AnchorDropDB.getVessels();
+      const select = document.getElementById("selectVessel");
+      const prompt = document.getElementById("vesselPrompt");
+
+      const currentUser = Auth.getUser();
+      if (!currentUser || currentUser.role !== "boater") {
+        prompt.innerHTML = `Browsing as guest. <a href="login.html" style="font-weight:bold; text-decoration:underline;">Sign in to save fleet</a> or select a registered demo boat below.`;
+      } else {
+        prompt.innerHTML = `Logged in as ${currentUser.name} (${currentUser.email})`;
+      }
+
+      select.innerHTML = vessels.map(v => `
+        <option value="${v.id}">${v.name} (${v.type} — ${v.length}ft L x ${v.beam}ft B x ${v.draft}ft Draft)</option>
+      `).join('');
+
+      runLiveCompatibilityCheck();
+      calculateEstimatedTotal();
+
+      document.getElementById("bookingModal").classList.add("open");
+    }
+
+    function closeBookingModal() {
+      document.getElementById("bookingModal").classList.remove("open");
+    }
+
+    function runLiveCompatibilityCheck() {
+      if (!currentSelectedDock) return;
+      const vesselId = document.getElementById("selectVessel").value;
+      const vessels = AnchorDropDB.getVessels();
+      const vessel = vessels.find(v => v.id === vesselId);
+      const compatBox = document.getElementById("compatibilityBox");
+      const submitBtn = document.getElementById("submitBookingBtn");
+
+      if (!vessel) {
+        compatBox.style.display = "none";
+        return;
+      }
+
+      const result = checkCompatibility(vessel, currentSelectedDock);
+      compatBox.style.display = "block";
+
+      if (result.compatible) {
+        compatBox.className = "compat-box compat-success";
+        compatBox.innerHTML = `
+          <strong>Vessel is Dimensionally Compatible</strong>
+          <p style="margin-top:4px; font-size:13px;">
+            ${vessel.name}'s length (${vessel.length}ft), beam (${vessel.beam}ft), and draft (${vessel.draft}ft) fit safely within this berth's capacity.
+          </p>
+        `;
+        submitBtn.disabled = false;
+        submitBtn.classList.remove("btn-danger");
+        submitBtn.classList.add("btn-primary");
+      } else {
+        compatBox.className = "compat-box compat-danger";
+        compatBox.innerHTML = `
+          <strong>Dimensional Incompatibility Warning</strong>
+          <ul>
+            ${result.errors.map(err => `<li>${err}</li>`).join('')}
+          </ul>
+          <small style="display:block; margin-top:6px;">Warning: Booking an incompatible vessel may result in rejection or damage.</small>
+        `;
+        // Allow request submission but visually warn
+        submitBtn.disabled = false;
+      }
+    }
+
+    function calculateEstimatedTotal() {
+      if (!currentSelectedDock) return;
+      const startStr = document.getElementById("bookingStartDate").value;
+      const endStr = document.getElementById("bookingEndDate").value;
+      const totalDisplay = document.getElementById("modalTotalEstimate");
+
+      if (!startStr || !endStr) {
+        totalDisplay.innerText = `$${currentSelectedDock.dailyPrice}`;
+        return;
+      }
+
+      const start = new Date(startStr);
+      const end = new Date(endStr);
+      const diffTime = end - start;
+      const days = Math.max(1, Math.ceil(diffTime / (1000 * 60 * 60 * 24)));
+
+      const total = days * currentSelectedDock.dailyPrice;
+      totalDisplay.innerText = `$${total} (${days} night${days > 1 ? 's' : ''})`;
+    }
+
+    function handleBookingSubmit(e) {
+      e.preventDefault();
+      const currentUser = Auth.getUser();
+
+      const vesselId = document.getElementById("selectVessel").value;
+      const vessel = AnchorDropDB.getVessels().find(v => v.id === vesselId);
+      const startDate = document.getElementById("bookingStartDate").value;
+      const endDate = document.getElementById("bookingEndDate").value;
+      const notes = document.getElementById("bookingNotes").value;
+
+      if (new Date(endDate) <= new Date(startDate)) {
+        alert("Departure date must be after arrival date.");
+        return;
+      }
+
+      const days = Math.max(1, Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)));
+      const totalPrice = days * currentSelectedDock.dailyPrice;
+
+      const newBooking = {
+        berthId: currentSelectedDock.id,
+        berthName: currentSelectedDock.name,
+        boaterEmail: currentUser ? currentUser.email : "sarah@boater.com",
+        boaterName: currentUser ? currentUser.name : "Captain Sarah",
+        vesselId: vessel.id,
+        vesselName: vessel.name,
+        vesselDims: `${vessel.length}ft L x ${vessel.beam}ft B x ${vessel.draft}ft D`,
+        startDate: startDate,
+        endDate: endDate,
+        totalPrice: totalPrice,
+        specialRequests: notes || "None",
+        arrivalInstructions: currentSelectedDock.instructions
+      };
+
+      AnchorDropDB.createBooking(newBooking);
+      closeBookingModal();
+
+      alert(`Success! Booking request for ${currentSelectedDock.name} has been submitted with status 'Pending'. You can view it in the Boater Dashboard or switch to the Dock Owner to accept it.`);
+
+      if (currentUser && currentUser.role === "boater") {
+        window.location.href = "boater-dashboard.html";
+      }
+    }
+  </script>
+</body>
+</html>

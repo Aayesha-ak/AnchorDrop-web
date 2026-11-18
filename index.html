@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AnchorDrop — Your Place on the Water!</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="brand-container">
+      <a href="index.html" class="brand-logo">
+        <svg class="brand-icon-svg" viewBox="0 0 24 24">
+          <circle cx="12" cy="5" r="2.5"></circle>
+          <line x1="12" y1="7.5" x2="12" y2="21"></line>
+          <path d="M5 13a7 7 0 0 0 14 0"></path>
+          <line x1="8" y1="10" x2="16" y2="10"></line>
+        </svg>
+        <div class="brand-text">
+          <div class="brand-name">Anchor<span>Drop</span></div>
+          <div class="brand-tag">Slip Network</div>
+        </div>
+      </a>
+    </div>
+    <div class="nav-links">
+      <!-- Populated dynamically by js/app.js -->
+    </div>
+  </nav>
+
+  <!-- Hero Section with Smooth Wipe Slider -->
+  <header class="hero" id="heroSection">
+    <!-- Slider Background Layers (Using only the two user-provided images) -->
+    <div class="hero-slider">
+      <div class="hero-slide slide-0" style="background-image: linear-gradient(rgba(10, 17, 32, 0.62), rgba(10, 17, 32, 0.78)), url('images/istockphoto-937731582-612x612.jpg');"></div>
+      <div class="hero-slide slide-1" style="background-image: linear-gradient(rgba(10, 17, 32, 0.62), rgba(10, 17, 32, 0.78)), url('images/Types-of-Boating-Docks.webp');"></div>
+    </div>
+
+    <!-- Hero Content -->
+    <div class="hero-content">
+      <div class="hero-pill">Verified Maritime Slip Exchange</div>
+      <h1>Your Place on the Water</h1>
+      <p class="tagline">Discover. Dock. Unwind.</p>
+      <p class="intro">
+        A simpler way to discover, reserve and offer docking spaces. Connecting boaters with private berths and premier marina slips.
+      </p>
+      <div class="hero-actions">
+        <a href="explore.html" class="btn btn-primary">Find a Dock</a>
+        <a href="login.html" class="btn btn-secondary">List Your Berth</a>
+      </div>
+    </div>
+
+    <!-- Wiping Slider Controls -->
+    <button class="hero-nav-btn prev" onclick="prevHeroSlide()" aria-label="Previous Slide">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+    </button>
+    <button class="hero-nav-btn next" onclick="nextHeroSlide()" aria-label="Next Slide">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+    </button>
+
+    <!-- Slider Dots -->
+    <div class="hero-dots">
+      <span class="hero-dot active" onclick="gotoHeroSlide(0)"></span>
+      <span class="hero-dot" onclick="gotoHeroSlide(1)"></span>
+    </div>
+  </header>
+
+  <!-- Main Content Area -->
+  <main class="container">
+
+    <!-- About Introduction -->
+    <section class="section-header">
+      <span class="section-eyebrow">The AnchorDrop Advantage</span>
+      <h2>Connecting Boaters with Elite Waterways</h2>
+      <p>
+        The dedicated two-sided marketplace engineered for boaters needing overnight or temporary dockage and waterfront property owners with available berths.
+      </p>
+    </section>
+
+    <!-- Featured Docking Spaces -->
+    <section style="margin-bottom: 70px;">
+      <div style="display:flex; justify-content:space-between; align-items:flex-end; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+        <div>
+          <span class="section-eyebrow">Curated Moorings</span>
+          <h2 style="font-size:30px;">Featured Berths & Slips</h2>
+          <p style="color:var(--text-muted); font-size:14px;">Handpicked verified docking spaces with complete physical dimension data.</p>
+        </div>
+        <a href="explore.html" class="btn btn-secondary btn-sm">Explore All Slips →</a>
+      </div>
+
+      <div class="cards-grid" id="featuredDocksGrid">
+        <!-- Rendered via JavaScript -->
+      </div>
+    </section>
+
+    <!-- How It Works Summary -->
+    <section style="margin-bottom: 70px;">
+      <div class="section-header">
+        <span class="section-eyebrow">Simple & Transparent</span>
+        <h2>Two Sides, One Seamless Platform</h2>
+        <p>Built to serve both passionate boat captains and gracious waterfront dock hosts.</p>
+      </div>
+
+      <div class="how-it-works-grid">
+        <!-- Boater Column -->
+        <div class="role-column">
+          <span class="role-badge">For Boaters</span>
+          <h3 style="font-size:24px; margin-bottom:12px;">Find Your Perfect Mooring</h3>
+          <p style="color:var(--text-muted); font-size:14px; margin-bottom: 24px;">
+            Never guess whether your boat will fit. Store your vessel dimensions once and let AnchorDrop verify dock length, beam, and water depth before you request.
+          </p>
+          <div class="step-item">
+            <div class="step-num">01</div>
+            <div class="step-content">
+              <h4>Register Your Boat</h4>
+              <p>Add vessel length, beam, draft and registration in your Boater Dashboard.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">02</div>
+            <div class="step-content">
+              <h4>Instant Compatibility Check</h4>
+              <p>Compare your draft and beam against dock limits to guarantee a safe tie-up.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">03</div>
+            <div class="step-content">
+              <h4>Reserve & Receive Arrival PIN</h4>
+              <p>Access gate codes, VHF radio channels, and report arrival delays in one tap.</p>
+            </div>
+          </div>
+          <a href="explore.html" class="btn btn-primary btn-sm" style="margin-top:10px;">Explore Docks Now</a>
+        </div>
+
+        <!-- Dock Owner Column -->
+        <div class="role-column">
+          <span class="role-badge">For Dock Owners</span>
+          <h3 style="font-size:24px; margin-bottom:12px;">Monetize Your Waterfront Berth</h3>
+          <p style="color:var(--text-muted); font-size:14px; margin-bottom: 24px;">
+            Whether you own a private home on a canal or manage a marina, list your open slip and connect with verified boaters looking for secure docking.
+          </p>
+          <div class="step-item">
+            <div class="step-num">01</div>
+            <div class="step-content">
+              <h4>List Berth Dimensions</h4>
+              <p>Specify maximum length, beam, minimum low-tide depth and amenities.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">02</div>
+            <div class="step-content">
+              <h4>Review Incoming Requests</h4>
+              <p>Inspect the boater's vessel profile and accept or decline with a single click.</p>
+            </div>
+          </div>
+          <div class="step-item">
+            <div class="step-num">03</div>
+            <div class="step-content">
+              <h4>Coordinate Arrivals</h4>
+              <p>Send secure dock codes, manage check-in instructions, and view ETA delay updates.</p>
+            </div>
+          </div>
+          <a href="login.html" class="btn btn-secondary btn-sm" style="margin-top:10px;">List Your Berth</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quick Presentation Demo Helper -->
+    <section class="demo-account-box">
+      <span class="section-eyebrow">College Presentation</span>
+      <h3 style="color:var(--navy); font-size:22px; margin-bottom:6px;">Viva Demonstration Command Center</h3>
+      <p style="max-width:550px; margin:0 auto 18px;">Demonstrating this project to your professor? Use the 1-click demo logins below to toggle roles instantly:</p>
+      <div class="demo-btn-group">
+        <button class="btn btn-primary btn-sm" onclick="Auth.loginDemoBoater()">Log In as Demo Boater (Sarah)</button>
+        <button class="btn btn-secondary btn-sm" onclick="Auth.loginDemoOwner()">Log In as Demo Dock Owner (Robert)</button>
+        <button class="btn btn-danger btn-sm" onclick="AnchorDropDB.resetDemo()">Reset Demo Data</button>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="padding:0;">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3>About AnchorDrop</h3>
+          <p>
+            AnchorDrop is a specialized web marketplace connecting boat owners with private dock providers and marina operators. Our goal is to make every docking experience safer, simpler and transparent.
+          </p>
+          <p style="font-size:12px; color:#9CA3AF;">
+            MCA College Demonstration Project — HTML5, CSS3, & Vanilla JavaScript.
+          </p>
+        </div>
+        <div class="footer-section">
+          <h3>Contact Us</h3>
+          <ul>
+            <li>Email: support@anchordrop.com</li>
+            <li>Boater Support: reservations@anchordrop.com</li>
+            <li>Dock Hosts: hostsupport@anchordrop.com</li>
+            <li>Miami & Fort Lauderdale, FL</li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Policies & Terms</h3>
+          <ul>
+            <li><a href="how-it-works.html">How It Works Guide</a></li>
+            <li><a href="javascript:alert('Terms: Users agree to provide truthful vessel dimensions and maintain dock safety standards.')">Terms & Conditions</a></li>
+            <li><a href="javascript:alert('Privacy: All boater registration and contact information is kept strictly confidential.')">Privacy Policy</a></li>
+            <li><a href="javascript:alert('Compatibility Disclaimer: AnchorDrop provides dimensional checks, not navigational safety guarantees.')">Safety Disclaimer</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        © 2026 AnchorDrop. All rights reserved. Discover. Dock. Unwind.
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="js/app.js"></script>
+  <script>
+    // -------------------------------------------------------------------------
+    // Smooth Wiping Slider for Hero Section (2-Image Seamless Transition)
+    // -------------------------------------------------------------------------
+    let currentHeroIndex = 0;
+    let heroTimer = null;
+    let isWiping = false;
+
+    function gotoHeroSlide(targetIndex, direction = 'right') {
+      const slides = document.querySelectorAll(".hero-slide");
+      const dots = document.querySelectorAll(".hero-dot");
+      if (slides.length < 2 || isWiping || targetIndex === currentHeroIndex) return;
+
+      isWiping = true;
+      const currentSlide = slides[currentHeroIndex];
+      const targetSlide = slides[targetIndex];
+
+      // Position target slide off-screen in the correct direction
+      targetSlide.style.transition = "none";
+      targetSlide.style.transform = direction === 'right' ? "translateX(100%)" : "translateX(-100%)";
+      targetSlide.style.opacity = "1";
+      targetSlide.style.zIndex = "3";
+      currentSlide.style.zIndex = "2";
+
+      // Trigger reflow to commit initial placement
+      void targetSlide.offsetWidth;
+
+      // Animate smooth wipe across
+      targetSlide.style.transition = "transform 0.65s cubic-bezier(0.25, 1, 0.5, 1)";
+      currentSlide.style.transition = "transform 0.65s cubic-bezier(0.25, 1, 0.5, 1)";
+
+      targetSlide.style.transform = "translateX(0)";
+      currentSlide.style.transform = direction === 'right' ? "translateX(-100%)" : "translateX(100%)";
+
+      currentHeroIndex = targetIndex;
+      dots.forEach((dot, idx) => dot.classList.toggle("active", idx === currentHeroIndex));
+
+      setTimeout(() => {
+        currentSlide.style.opacity = "0";
+        currentSlide.style.zIndex = "1";
+        isWiping = false;
+      }, 650);
+
+      restartHeroTimer();
+    }
+
+    function nextHeroSlide() {
+      const slides = document.querySelectorAll(".hero-slide");
+      const nextIndex = (currentHeroIndex + 1) % slides.length;
+      gotoHeroSlide(nextIndex, 'right');
+    }
+
+    function prevHeroSlide() {
+      const slides = document.querySelectorAll(".hero-slide");
+      const prevIndex = (currentHeroIndex - 1 + slides.length) % slides.length;
+      gotoHeroSlide(prevIndex, 'left');
+    }
+
+    function restartHeroTimer() {
+      clearInterval(heroTimer);
+      heroTimer = setInterval(nextHeroSlide, 4500);
+    }
+
+    // Render first 3 featured docks & initialize slider
+    document.addEventListener("DOMContentLoaded", () => {
+      // Start auto-play for hero slider
+      restartHeroTimer();
+
+      const hero = document.getElementById("heroSection");
+      if (hero) {
+        hero.addEventListener("mouseenter", () => clearInterval(heroTimer));
+        hero.addEventListener("mouseleave", restartHeroTimer);
+      }
+
+      const docks = AnchorDropDB.getDocks().slice(0, 3);
+      const grid = document.getElementById("featuredDocksGrid");
+      if (grid) {
+        grid.innerHTML = docks.map(dock => `
+          <div class="card">
+            <div class="card-image-wrap">
+              <img src="${dock.image}" alt="${dock.name}">
+              <span class="card-badge">${dock.dockType}</span>
+            </div>
+            <div class="card-body">
+              <h3 class="card-title">${dock.name}</h3>
+              <p class="card-location">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                ${dock.location}
+              </p>
+              <div class="card-specs">
+                <span>Length: <strong>${dock.maxLength} ft</strong></span>
+                <span>Beam: <strong>${dock.maxBeam} ft</strong></span>
+                <span>Depth: <strong>${dock.minDepth} ft</strong></span>
+                <span>Channel: <strong>${dock.waterway.split(' ')[0]}</strong></span>
+              </div>
+              <div class="card-amenities">
+                ${dock.amenities.slice(0, 3).map(a => `<span class="amenity-tag">${a}</span>`).join('')}
+              </div>
+              <div class="card-footer">
+                <div class="card-price">$${dock.dailyPrice} <span>/ day</span></div>
+                <a href="explore.html" class="btn btn-primary btn-sm">Check Fit & Book</a>
+              </div>
+            </div>
+          </div>
+        `).join('');
+      }
+    });
+  </script>
+</body>
+</html>

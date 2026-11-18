@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign In / Register — AnchorDrop</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="brand-container">
+      <a href="index.html" class="brand-logo">
+        <svg class="brand-icon-svg" viewBox="0 0 24 24">
+          <circle cx="12" cy="5" r="2.5"></circle>
+          <line x1="12" y1="7.5" x2="12" y2="21"></line>
+          <path d="M5 13a7 7 0 0 0 14 0"></path>
+          <line x1="8" y1="10" x2="16" y2="10"></line>
+        </svg>
+        <div class="brand-text">
+          <div class="brand-name">Anchor<span>Drop</span></div>
+          <div class="brand-tag">Slip Network</div>
+        </div>
+      </a>
+    </div>
+    <div class="nav-links">
+      <!-- Populated dynamically by js/app.js -->
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="auth-container">
+      <div class="auth-header">
+        <div class="logo-badge">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="5" r="2.5"></circle>
+            <line x1="12" y1="7.5" x2="12" y2="21"></line>
+            <path d="M5 13a7 7 0 0 0 14 0"></path>
+            <line x1="8" y1="10" x2="16" y2="10"></line>
+          </svg>
+        </div>
+        <h2 style="font-size:26px;">AnchorDrop Portal</h2>
+        <p style="color:var(--text-muted); font-size:14px; margin-top:4px;">Sign in to coordinate docking or manage your berths</p>
+      </div>
+
+      <!-- Tabs: Sign In vs Register -->
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="tabSignIn" onclick="switchAuthTab('signin')">Sign In</div>
+        <div class="auth-tab" id="tabRegister" onclick="switchAuthTab('register')">Create Account</div>
+      </div>
+
+      <!-- Sign In Form -->
+      <form id="signInForm" onsubmit="handleSignIn(event)">
+        <div class="form-group">
+          <label for="loginEmail">Email Address</label>
+          <input type="email" id="loginEmail" placeholder="e.g. sarah@boater.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" placeholder="••••••••" required>
+        </div>
+
+        <div class="form-group">
+          <label for="loginRole">Account Role</label>
+          <select id="loginRole" required>
+            <option value="boater">Boater (Looking for Docks)</option>
+            <option value="owner">Dock Owner / Marina Host</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="width:100%; margin-top:10px;">Sign In to Dashboard</button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="registerForm" onsubmit="handleRegister(event)" style="display:none;">
+        <div class="form-group">
+          <label for="regName">Full Name / Organization</label>
+          <input type="text" id="regName" placeholder="e.g. Captain David" required>
+        </div>
+
+        <div class="form-group">
+          <label for="regEmail">Email Address</label>
+          <input type="email" id="regEmail" placeholder="e.g. david@example.com" required>
+        </div>
+
+        <div class="form-group">
+          <label for="regPassword">Create Password</label>
+          <input type="password" id="regPassword" placeholder="••••••••" required>
+        </div>
+
+        <div class="form-group">
+          <label for="regRole">I want to register as a: *</label>
+          <select id="regRole" required>
+            <option value="boater">Boater (I own a vessel & need slips)</option>
+            <option value="owner">Dock Owner (I have private dock or marina space)</option>
+          </select>
+        </div>
+
+        <button type="submit" class="btn btn-secondary" style="width:100%; margin-top:10px;">Complete Registration</button>
+      </form>
+
+      <!-- Fast Demo Switcher (For Professor / Presentation) -->
+      <div class="demo-account-box" style="margin-top:28px;">
+        <span class="section-eyebrow">College Presentation</span>
+        <h4 style="color:var(--navy); margin-bottom:4px; font-size:16px;">1-Click Viva Demo Logins</h4>
+        <p style="font-size:13px; margin-bottom:14px;">Instant access to pre-seeded boater and dock owner accounts:</p>
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <button type="button" class="btn btn-primary btn-sm" onclick="Auth.loginDemoBoater()">
+            Enter as Demo Boater (Captain Sarah)
+          </button>
+          <button type="button" class="btn btn-secondary btn-sm" onclick="Auth.loginDemoOwner()">
+            Enter as Demo Dock Owner (Robert - Marina Bay)
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="padding:0;">
+      <div class="footer-bottom">
+        © 2026 AnchorDrop. All rights reserved. Demo authentication powered by browser LocalStorage.
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    function switchAuthTab(tab) {
+      const signInForm = document.getElementById("signInForm");
+      const registerForm = document.getElementById("registerForm");
+      const tabSignIn = document.getElementById("tabSignIn");
+      const tabRegister = document.getElementById("tabRegister");
+
+      if (tab === 'signin') {
+        signInForm.style.display = "block";
+        registerForm.style.display = "none";
+        tabSignIn.classList.add("active");
+        tabRegister.classList.remove("active");
+      } else {
+        signInForm.style.display = "none";
+        registerForm.style.display = "block";
+        tabSignIn.classList.remove("active");
+        tabRegister.classList.add("active");
+      }
+    }
+
+    function handleSignIn(e) {
+      e.preventDefault();
+      const email = document.getElementById("loginEmail").value.trim();
+      const role = document.getElementById("loginRole").value;
+      const name = email.split('@')[0].replace('.', ' ');
+
+      const user = {
+        name: name.charAt(0).toUpperCase() + name.slice(1),
+        email: email,
+        role: role
+      };
+
+      Auth.login(user);
+
+      if (role === "boater") {
+        window.location.href = "boater-dashboard.html";
+      } else {
+        window.location.href = "owner-dashboard.html";
+      }
+    }
+
+    function handleRegister(e) {
+      e.preventDefault();
+      const name = document.getElementById("regName").value.trim();
+      const email = document.getElementById("regEmail").value.trim();
+      const role = document.getElementById("regRole").value;
+
+      const user = {
+        name: name,
+        email: email,
+        role: role
+      };
+
+      Auth.login(user);
+      alert(`Account created successfully for ${name} as ${role === 'boater' ? 'Boater' : 'Dock Owner'}! Redirecting...`);
+
+      if (role === "boater") {
+        window.location.href = "boater-dashboard.html";
+      } else {
+        window.location.href = "owner-dashboard.html";
+      }
+    }
+  </script>
+</body>
+</html>

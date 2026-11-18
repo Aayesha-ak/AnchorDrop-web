@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How AnchorDrop Works — Boater & Dock Owner Guide</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="brand-container">
+      <a href="index.html" class="brand-logo">
+        <svg class="brand-icon-svg" viewBox="0 0 24 24">
+          <circle cx="12" cy="5" r="2.5"></circle>
+          <line x1="12" y1="7.5" x2="12" y2="21"></line>
+          <path d="M5 13a7 7 0 0 0 14 0"></path>
+          <line x1="8" y1="10" x2="16" y2="10"></line>
+        </svg>
+        <div class="brand-text">
+          <div class="brand-name">Anchor<span>Drop</span></div>
+          <div class="brand-tag">Slip Network</div>
+        </div>
+      </a>
+    </div>
+    <div class="nav-links">
+      <!-- Populated dynamically by js/app.js -->
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+    <div class="section-header">
+      <span class="section-eyebrow">Platform Architecture</span>
+      <h2>How AnchorDrop Works</h2>
+      <p>A transparent two-sided marine marketplace designed to prevent docking surprises and maximize slip availability.</p>
+    </div>
+
+    <!-- The Two Sides -->
+    <div class="how-it-works-grid" style="margin-bottom: 60px;">
+      <!-- Boater Guide -->
+      <div class="role-column">
+        <span class="role-badge">For Boaters & Skippers</span>
+        <h3 style="font-size:24px; margin-bottom:12px;">Effortless Docking in 4 Steps</h3>
+        <p style="color:var(--text-muted); font-size:14px; margin-bottom:24px;">
+          Finding an overnight slip should never involve calling marinas on repeat. AnchorDrop guarantees dimensional fit before you book.
+        </p>
+
+        <div class="step-item">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <h4>Save Your Vessel Profile</h4>
+            <p>Input your boat's length overall (LOA), beam (width), draft (depth below water), and registration. You only enter this once.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <h4>Search Waterways & Slips</h4>
+            <p>Filter by location, waterway channel, shore power needs (30A/50A), and daily budget on our Explore page.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <h4>Instant Compatibility Algorithm</h4>
+            <p>Our JavaScript engine compares your vessel against the dock's limits. It flags any grounding hazards or beam restrictions.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <h4>Arrive with Confidence</h4>
+            <p>Once accepted, unlock arrival instructions, gate PIN codes, and hail channels. Report delays if tides or weather hold you up.</p>
+          </div>
+        </div>
+
+        <a href="explore.html" class="btn btn-primary btn-sm" style="margin-top:10px;">Browse Available Slips →</a>
+      </div>
+
+      <!-- Dock Owner Guide -->
+      <div class="role-column">
+        <span class="role-badge">For Dock Hosts & Marinas</span>
+        <h3 style="font-size:24px; margin-bottom:12px;">Earn from Vacant Waterways</h3>
+        <p style="color:var(--text-muted); font-size:14px; margin-bottom:24px;">
+          Whether you have a private residential canal dock or manage commercial marina slips, put your empty water to work.
+        </p>
+
+        <div class="step-item">
+          <div class="step-num">01</div>
+          <div class="step-content">
+            <h4>Publish Your Berth Listing</h4>
+            <p>Specify maximum vessel length, beam, low-tide water depth, daily rates, and available amenities like water and electric.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">02</div>
+          <div class="step-content">
+            <h4>Receive Pre-Screened Requests</h4>
+            <p>Only vessels that have been dimensionally evaluated can submit requests, ensuring you only receive compatible boats.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">03</div>
+          <div class="step-content">
+            <h4>Accept or Decline with One Click</h4>
+            <p>Inspect the boater's requested dates, vessel specifications, and special requests before confirming the reservation.</p>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <div class="step-num">04</div>
+          <div class="step-content">
+            <h4>Track Arrivals & Weather Delays</h4>
+            <p>Stay coordinated. When a boater runs into sea delays, view their revised ETA in real time on your dashboard.</p>
+          </div>
+        </div>
+
+        <a href="login.html" class="btn btn-secondary btn-sm" style="margin-top:10px;">List Your Berth</a>
+      </div>
+    </div>
+
+    <!-- The Compatibility Engine Explained (Crucial for Viva/Professor!) -->
+    <section style="background:#fff; border:1px solid var(--border-subtle); border-radius:var(--radius); padding:32px; box-shadow:var(--shadow-card); margin-bottom:40px;">
+      <h3 style="font-size:24px; color:var(--text-heading); margin-bottom:12px;">The AnchorDrop Compatibility Formula</h3>
+      <p style="color:var(--text-muted); margin-bottom:20px;">
+        To ensure safe navigation and tie-ups, our platform evaluates 3 fundamental physical marine constraints:
+      </p>
+
+      <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:20px;">
+        <div style="padding:16px; background:#F8FAFC; border-radius:6px; border-left:4px solid var(--primary);">
+          <h4 style="color:var(--navy); margin-bottom:6px;">1. Length Check (LOA)</h4>
+          <p style="font-size:13px; color:var(--text-dark);">
+            <code>Vessel.Length ≤ Dock.MaxLength</code>
+            <br><br>
+            Ensures the boat does not overhang dangerously into navigation fairways or block neighboring slips.
+          </p>
+        </div>
+
+        <div style="padding:16px; background:#F8FAFC; border-radius:6px; border-left:4px solid var(--primary);">
+          <h4 style="color:var(--navy); margin-bottom:6px;">2. Beam Check (Width)</h4>
+          <p style="font-size:13px; color:var(--text-dark);">
+            <code>Vessel.Beam ≤ Dock.MaxBeam</code>
+            <br><br>
+            Ensures catamarans and wide cruisers have adequate clearance between pilings and fenders.
+          </p>
+        </div>
+
+        <div style="padding:16px; background:#F8FAFC; border-radius:6px; border-left:4px solid var(--primary);">
+          <h4 style="color:var(--navy); margin-bottom:6px;">3. Draft Check (Depth)</h4>
+          <p style="font-size:13px; color:var(--text-dark);">
+            <code>Vessel.Draft ≤ Dock.MinDepth</code>
+            <br><br>
+            Ensures the keel or propeller does not strike the seabed at mean low water (MLW) tide conditions.
+          </p>
+        </div>
+      </div>
+
+      <div style="margin-top:20px; font-size:12px; color:var(--text-muted); font-style:italic;">
+        * Note: Compatibility is a preliminary dimensional check to aid decision-making and does not substitute local nautical charts or captain navigational responsibility.
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="padding:0;">
+      <div class="footer-bottom">
+        © 2026 AnchorDrop. All rights reserved. Clean Vanilla HTML/CSS/JS architecture.
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

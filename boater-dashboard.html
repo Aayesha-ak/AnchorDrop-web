@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Boater Dashboard — AnchorDrop</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar">
+    <div class="brand-container">
+      <a href="index.html" class="brand-logo">
+        <svg class="brand-icon-svg" viewBox="0 0 24 24">
+          <circle cx="12" cy="5" r="2.5"></circle>
+          <line x1="12" y1="7.5" x2="12" y2="21"></line>
+          <path d="M5 13a7 7 0 0 0 14 0"></path>
+          <line x1="8" y1="10" x2="16" y2="10"></line>
+        </svg>
+        <div class="brand-text">
+          <div class="brand-name">Anchor<span>Drop</span></div>
+          <div class="brand-tag">Slip Network</div>
+        </div>
+      </a>
+    </div>
+    <div class="nav-links">
+      <!-- Populated dynamically by js/app.js -->
+    </div>
+  </nav>
+
+  <!-- Main Container -->
+  <main class="container">
+    <!-- Dashboard Header -->
+    <div class="dashboard-header">
+      <div>
+        <span class="section-eyebrow">Captain's Command Deck</span>
+        <h2 id="welcomeGreeting" style="font-size:32px;">Boater Dashboard</h2>
+        <p style="color:var(--text-muted); font-size:14px; margin-top:4px;">Manage your fleet, track docking reservations, access gate codes, and report arrival delays.</p>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <a href="explore.html" class="btn btn-primary btn-sm">Explore Docks</a>
+        <button class="btn btn-secondary btn-sm" onclick="Auth.loginDemoOwner()">Switch to Owner View</button>
+      </div>
+    </div>
+
+    <!-- Boater Quick Stats -->
+    <div class="dash-stats-grid">
+      <div class="stat-card">
+        <span class="stat-label">Registered Fleet</span>
+        <span class="stat-value" id="statVesselsCount">2</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Total Reservations</span>
+        <span class="stat-value" id="statBookingsCount">2</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Confirmed Slips</span>
+        <span class="stat-value" id="statConfirmedCount" style="color:var(--success);">1</span>
+      </div>
+      <div class="stat-card">
+        <span class="stat-label">Captain Clearance</span>
+        <span class="stat-value" style="font-size:19px; color:var(--primary); font-weight:700; margin-top:4px;">Verified Skipper</span>
+      </div>
+    </div>
+
+    <!-- Dashboard Tabs -->
+    <div class="dashboard-tabs">
+      <button class="dash-tab-btn active" id="tabBtnVessels" onclick="switchDashboardTab('vessels')">My Vessels</button>
+      <button class="dash-tab-btn" id="tabBtnBookings" onclick="switchDashboardTab('bookings')">My Bookings & Arrivals</button>
+    </div>
+
+    <!-- PANEL 1: MY VESSELS -->
+    <section id="panelVessels" class="dashboard-panel active">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div>
+          <h3>Registered Fleet</h3>
+          <p style="font-size:13px; color:var(--text-muted);">Accurate vessel dimensions are automatically verified against berth limits when booking.</p>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="openAddVesselModal()">+ Add New Vessel</button>
+      </div>
+
+      <div class="table-wrap">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Vessel Name</th>
+              <th>Type</th>
+              <th>Length</th>
+              <th>Beam (Width)</th>
+              <th>Draft (Depth)</th>
+              <th>Registration #</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="vesselsTableBody">
+            <!-- Injected by JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- PANEL 2: MY BOOKINGS & ARRIVALS -->
+    <section id="panelBookings" class="dashboard-panel">
+      <div style="margin-bottom:16px;">
+        <h3>My Dock Reservations</h3>
+        <p style="font-size:13px; color:var(--text-muted);">
+          Arrival instructions and gate access codes become active only after the Dock Owner has Accepted your booking.
+        </p>
+      </div>
+
+      <div id="bookingsContainer">
+        <!-- Rendered by JavaScript -->
+      </div>
+    </section>
+  </main>
+
+  <!-- ADD / EDIT VESSEL MODAL -->
+  <div class="modal-overlay" id="vesselModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeVesselModal()">&times;</button>
+      <h3 id="vesselModalTitle" style="margin-bottom:16px;">Add New Vessel</h3>
+      <form id="vesselForm" onsubmit="handleSaveVessel(event)">
+        <input type="hidden" id="vesselId">
+
+        <div class="form-group">
+          <label for="vesselName">Vessel Name *</label>
+          <input type="text" id="vesselName" placeholder="e.g. Sea Breeze" required>
+        </div>
+
+        <div class="form-group">
+          <label for="vesselType">Vessel Type *</label>
+          <select id="vesselType" required>
+            <option value="Motor Yacht">Motor Yacht</option>
+            <option value="Sailboat">Sailboat</option>
+            <option value="Catamaran">Catamaran</option>
+            <option value="Center Console">Center Console</option>
+            <option value="Trawler">Trawler</option>
+          </select>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px;">
+          <div class="form-group">
+            <label for="vesselLength">Length (ft) *</label>
+            <input type="number" step="0.5" id="vesselLength" placeholder="e.g. 42" required>
+          </div>
+          <div class="form-group">
+            <label for="vesselBeam">Beam (ft) *</label>
+            <input type="number" step="0.5" id="vesselBeam" placeholder="e.g. 14" required>
+          </div>
+          <div class="form-group">
+            <label for="vesselDraft">Draft (ft) *</label>
+            <input type="number" step="0.1" id="vesselDraft" placeholder="e.g. 4.5" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="vesselReg">Registration / HIN Number *</label>
+          <input type="text" id="vesselReg" placeholder="e.g. FL-9921-ZZ" required>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:20px;">
+          <button type="button" class="btn btn-secondary" onclick="closeVesselModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Vessel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- REPORT DELAY MODAL -->
+  <div class="modal-overlay" id="delayModal">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeDelayModal()">&times;</button>
+      <h3 style="margin-bottom:12px;">Report Arrival Delay</h3>
+      <p style="color:var(--text-muted); font-size:14px; margin-bottom:18px;">
+        Inform the dock host and harbormaster of tide delays, weather reroutes, or mechanical pauses.
+      </p>
+
+      <form id="delayForm" onsubmit="handleDelaySubmit(event)">
+        <input type="hidden" id="delayBookingId">
+
+        <div class="form-group">
+          <label for="delayEta">New Estimated Arrival Time (ETA) *</label>
+          <input type="time" id="delayEta" required>
+        </div>
+
+        <div class="form-group">
+          <label for="delayReason">Reason / Note for Host</label>
+          <textarea id="delayReason" rows="3" placeholder="e.g. Waiting for drawbridge clearance; strong outgoing tide. ETA revised by 45 mins."></textarea>
+        </div>
+
+        <div style="display:flex; justify-content:flex-end; gap:10px; margin-top:16px;">
+          <button type="button" class="btn btn-secondary" onclick="closeDelayModal()">Cancel</button>
+          <button type="submit" class="btn btn-primary">Notify Host & Update ETA</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container" style="padding:0;">
+      <div class="footer-bottom">
+        © 2026 AnchorDrop. All rights reserved. Boater fleet and booking coordination center.
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Ensure boater session
+      let user = Auth.getUser();
+      if (!user) {
+        // Auto-login as Captain Sarah for seamless college demo
+        user = { name: "Captain Sarah", email: "sarah@boater.com", role: "boater" };
+        Auth.login(user);
+      }
+      document.getElementById("welcomeGreeting").innerText = `Welcome aboard, ${user.name}`;
+
+      renderVessels();
+      renderBookings();
+    });
+
+    function switchDashboardTab(tab) {
+      document.getElementById("tabBtnVessels").classList.toggle("active", tab === 'vessels');
+      document.getElementById("tabBtnBookings").classList.toggle("active", tab === 'bookings');
+      document.getElementById("panelVessels").classList.toggle("active", tab === 'vessels');
+      document.getElementById("panelBookings").classList.toggle("active", tab === 'bookings');
+    }
+
+    // -------------------------------------------------------------------------
+    // Vessels CRUD
+    // -------------------------------------------------------------------------
+    function renderVessels() {
+      const vessels = AnchorDropDB.getVessels();
+      const tbody = document.getElementById("vesselsTableBody");
+      if (document.getElementById("statVesselsCount")) {
+        document.getElementById("statVesselsCount").innerText = vessels.length;
+      }
+
+      if (vessels.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" style="text-align:center; padding:24px; color:var(--text-muted);">No vessels saved yet. Click "+ Add New Vessel" to add your boat.</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = vessels.map(v => `
+        <tr>
+          <td><strong>${v.name}</strong></td>
+          <td>${v.type}</td>
+          <td>${v.length} ft</td>
+          <td>${v.beam} ft</td>
+          <td>${v.draft} ft</td>
+          <td><code>${v.registration}</code></td>
+          <td>
+            <button class="btn btn-secondary btn-sm" onclick="editVessel('${v.id}')">Edit</button>
+            <button class="btn btn-danger btn-sm" onclick="deleteVessel('${v.id}')">Delete</button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openAddVesselModal() {
+      document.getElementById("vesselForm").reset();
+      document.getElementById("vesselId").value = "";
+      document.getElementById("vesselModalTitle").innerText = "Add New Vessel";
+      document.getElementById("vesselModal").classList.add("open");
+    }
+
+    function closeVesselModal() {
+      document.getElementById("vesselModal").classList.remove("open");
+    }
+
+    function editVessel(id) {
+      const vessels = AnchorDropDB.getVessels();
+      const v = vessels.find(item => item.id === id);
+      if (!v) return;
+
+      document.getElementById("vesselId").value = v.id;
+      document.getElementById("vesselName").value = v.name;
+      document.getElementById("vesselType").value = v.type;
+      document.getElementById("vesselLength").value = v.length;
+      document.getElementById("vesselBeam").value = v.beam;
+      document.getElementById("vesselDraft").value = v.draft;
+      document.getElementById("vesselReg").value = v.registration;
+
+      document.getElementById("vesselModalTitle").innerText = "Edit Vessel Details";
+      document.getElementById("vesselModal").classList.add("open");
+    }
+
+    function deleteVessel(id) {
+      if (confirm("Are you sure you want to remove this vessel from your fleet?")) {
+        AnchorDropDB.deleteVessel(id);
+        renderVessels();
+      }
+    }
+
+    function handleSaveVessel(e) {
+      e.preventDefault();
+      const id = document.getElementById("vesselId").value;
+      const user = Auth.getUser();
+
+      const vessel = {
+        id: id || undefined,
+        name: document.getElementById("vesselName").value.trim(),
+        type: document.getElementById("vesselType").value,
+        length: parseFloat(document.getElementById("vesselLength").value),
+        beam: parseFloat(document.getElementById("vesselBeam").value),
+        draft: parseFloat(document.getElementById("vesselDraft").value),
+        registration: document.getElementById("vesselReg").value.trim(),
+        ownerEmail: user ? user.email : "sarah@boater.com"
+      };
+
+      AnchorDropDB.saveVessel(vessel);
+      closeVesselModal();
+      renderVessels();
+    }
+
+    // -------------------------------------------------------------------------
+    // Bookings & Arrivals
+    // -------------------------------------------------------------------------
+    function renderBookings() {
+      const bookings = AnchorDropDB.getBookings();
+      const container = document.getElementById("bookingsContainer");
+      if (document.getElementById("statBookingsCount")) {
+        document.getElementById("statBookingsCount").innerText = bookings.length;
+        document.getElementById("statConfirmedCount").innerText = bookings.filter(b => b.status === "Accepted").length;
+      }
+
+      if (bookings.length === 0) {
+        container.innerHTML = `
+          <div style="text-align:center; padding:40px; background:#fff; border-radius:8px; border:1px dashed var(--border-color);">
+            <h4>No reservation requests submitted yet.</h4>
+            <p style="color:var(--text-muted); margin:8px 0 16px;">Find a suitable berth and check your vessel compatibility.</p>
+            <a href="explore.html" class="btn btn-primary btn-sm">Explore Docks</a>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = bookings.map(b => {
+        let badgeClass = "badge-pending";
+        if (b.status === "Accepted") badgeClass = "badge-accepted";
+        if (b.status === "Rejected") badgeClass = "badge-rejected";
+
+        const isAccepted = b.status === "Accepted";
+
+        return `
+          <div style="background:#fff; border:1px solid var(--border-color); border-radius:var(--radius); padding:20px; margin-bottom:20px; box-shadow:var(--shadow);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+              <div>
+                <h4 style="font-size:18px; color:var(--navy);">${b.berthName}</h4>
+                <div style="font-size:13px; color:var(--text-muted);">
+                  Booking ID: <strong>#${b.id}</strong> • Vessel: <strong>${b.vesselName}</strong> (${b.vesselDims})
+                </div>
+              </div>
+              <div>
+                <span class="badge ${badgeClass}">${b.status.toUpperCase()}</span>
+              </div>
+            </div>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(160px, 1fr)); gap:12px; background:var(--cream); padding:12px; border-radius:6px; font-size:13px; margin-bottom:16px;">
+              <div>Dates: <strong>${b.startDate} to ${b.endDate}</strong></div>
+              <div>Total: <strong>$${b.totalPrice}</strong></div>
+              <div>Notes: <em>${b.specialRequests}</em></div>
+            </div>
+
+            <!-- ARRIVAL INFORMATION (Only if Accepted) -->
+            ${isAccepted ? `
+              <div style="border-left: 4px solid var(--success); background: #F0FDF4; padding:14px; border-radius: 4px; margin-bottom:14px;">
+                <h5 style="color:var(--success); font-size:14px; margin-bottom:4px;">Arrival & Docking Instructions</h5>
+                <p style="font-size:13px; color:#14532D; margin-bottom:8px;">${b.arrivalInstructions}</p>
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+                  <span style="font-size:12px; color:#166534;">Your berth is secured and prepared.</span>
+                  <button class="btn btn-secondary btn-sm" onclick="openDelayModal('${b.id}')">Report Arrival Delay</button>
+                </div>
+              </div>
+            ` : (b.status === 'Pending' ? `
+              <div style="font-size:12px; color:var(--text-muted); font-style:italic;">
+                Dock owner is reviewing your vessel specs. Arrival instructions and gate codes will unlock upon acceptance.
+              </div>
+            ` : `
+              <div style="font-size:12px; color:var(--danger);">
+                Request declined by dock owner (schedule conflict or maintenance).
+              </div>
+            `)}
+
+            <!-- DELAY REPORT STATUS -->
+            ${b.delayReport ? `
+              <div style="background:#FEF3C7; border:1px solid #FCD34D; border-radius:6px; padding:10px 14px; font-size:13px; color:#78350F; margin-top:10px;">
+                <strong>Delay Notice Transmitted:</strong> New ETA: <strong>${b.delayReport.newEta}</strong> (Reported at ${b.delayReport.reportedAt})
+                <br><em>Note: "${b.delayReport.note}"</em>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
+
+    function openDelayModal(bookingId) {
+      document.getElementById("delayBookingId").value = bookingId;
+      document.getElementById("delayForm").reset();
+      document.getElementById("delayModal").classList.add("open");
+    }
+
+    function closeDelayModal() {
+      document.getElementById("delayModal").classList.remove("open");
+    }
+
+    function handleDelaySubmit(e) {
+      e.preventDefault();
+      const id = document.getElementById("delayBookingId").value;
+      const eta = document.getElementById("delayEta").value;
+      const reason = document.getElementById("delayReason").value;
+
+      AnchorDropDB.reportDelay(id, eta, reason);
+      closeDelayModal();
+      renderBookings();
+      alert(`Delay reported! New ETA (${eta}) has been sent to the Dock Owner.`);
+    }
+  </script>
+</body>
+</html>
