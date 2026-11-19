@@ -34,7 +34,7 @@
     <div class="auth-container">
       <div class="auth-header">
         <div class="logo-badge">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--cyan-accent)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--gold)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="5" r="2.5"></circle>
             <line x1="12" y1="7.5" x2="12" y2="21"></line>
             <path d="M5 13a7 7 0 0 0 14 0"></path>
@@ -153,17 +153,17 @@
       e.preventDefault();
       const email = document.getElementById("loginEmail").value.trim();
       const role = document.getElementById("loginRole").value;
-      const name = email.split('@')[0].replace('.', ' ');
+      const registered = Auth.getRegisteredUsers().find(u => u.email.toLowerCase() === email.toLowerCase());
 
       const user = {
-        name: name.charAt(0).toUpperCase() + name.slice(1),
+        name: registered ? registered.name : email.split('@')[0].replace('.', ' ').replace(/\b\w/g, l => l.toUpperCase()),
         email: email,
-        role: role
+        role: registered ? registered.role : role
       };
 
       Auth.login(user);
 
-      if (role === "boater") {
+      if (user.role === "boater") {
         window.location.href = "boater-dashboard.html";
       } else {
         window.location.href = "owner-dashboard.html";
@@ -182,8 +182,8 @@
         role: role
       };
 
-      Auth.login(user);
-      alert(`Account created successfully for ${name} as ${role === 'boater' ? 'Boater' : 'Dock Owner'}! Redirecting...`);
+      Auth.register(user);
+      alert(`Account created successfully for ${name} as ${role === 'boater' ? 'Boater' : 'Dock Owner'}! Redirecting to your dashboard...`);
 
       if (role === "boater") {
         window.location.href = "boater-dashboard.html";

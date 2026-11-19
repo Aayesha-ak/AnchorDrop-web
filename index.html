@@ -31,10 +31,10 @@
 
   <!-- Hero Section with Smooth Wipe Slider -->
   <header class="hero" id="heroSection">
-    <!-- Slider Background Layers (Using only the two user-provided images) -->
+    <!-- Slider Background Layers -->
     <div class="hero-slider">
-      <div class="hero-slide slide-0" style="background-image: linear-gradient(rgba(10, 17, 32, 0.62), rgba(10, 17, 32, 0.78)), url('images/istockphoto-937731582-612x612.jpg');"></div>
-      <div class="hero-slide slide-1" style="background-image: linear-gradient(rgba(10, 17, 32, 0.62), rgba(10, 17, 32, 0.78)), url('images/Types-of-Boating-Docks.webp');"></div>
+      <div class="hero-slide slide-0" style="background-image: linear-gradient(rgba(11, 31, 51, 0.65), rgba(6, 16, 27, 0.82)), url('images/hero-marina.jpeg');"></div>
+      <div class="hero-slide slide-1" style="background-image: linear-gradient(rgba(11, 31, 51, 0.65), rgba(6, 16, 27, 0.82)), url('images/dock-sunset.jpg');"></div>
     </div>
 
     <!-- Hero Content -->
@@ -61,8 +61,8 @@
 
     <!-- Slider Dots -->
     <div class="hero-dots">
-      <span class="hero-dot active" onclick="gotoHeroSlide(0)"></span>
-      <span class="hero-dot" onclick="gotoHeroSlide(1)"></span>
+      <span class="hero-dot active" role="button" tabindex="0" aria-label="Slide 1" onclick="gotoHeroSlide(0)" onkeydown="if(event.key==='Enter')gotoHeroSlide(0)"></span>
+      <span class="hero-dot" role="button" tabindex="0" aria-label="Slide 2" onclick="gotoHeroSlide(1)" onkeydown="if(event.key==='Enter')gotoHeroSlide(1)"></span>
     </div>
   </header>
 
@@ -167,18 +167,6 @@
       </div>
     </section>
 
-    <!-- Quick Presentation Demo Helper -->
-    <section class="demo-account-box">
-      <span class="section-eyebrow">College Presentation</span>
-      <h3 style="color:var(--navy); font-size:22px; margin-bottom:6px;">Viva Demonstration Command Center</h3>
-      <p style="max-width:550px; margin:0 auto 18px;">Demonstrating this project to your professor? Use the 1-click demo logins below to toggle roles instantly:</p>
-      <div class="demo-btn-group">
-        <button class="btn btn-primary btn-sm" onclick="Auth.loginDemoBoater()">Log In as Demo Boater (Sarah)</button>
-        <button class="btn btn-secondary btn-sm" onclick="Auth.loginDemoOwner()">Log In as Demo Dock Owner (Robert)</button>
-        <button class="btn btn-danger btn-sm" onclick="AnchorDropDB.resetDemo()">Reset Demo Data</button>
-      </div>
-    </section>
-
   </main>
 
   <!-- Footer -->
@@ -207,9 +195,9 @@
           <h3>Policies & Terms</h3>
           <ul>
             <li><a href="how-it-works.html">How It Works Guide</a></li>
-            <li><a href="javascript:alert('Terms: Users agree to provide truthful vessel dimensions and maintain dock safety standards.')">Terms & Conditions</a></li>
-            <li><a href="javascript:alert('Privacy: All boater registration and contact information is kept strictly confidential.')">Privacy Policy</a></li>
-            <li><a href="javascript:alert('Compatibility Disclaimer: AnchorDrop provides dimensional checks, not navigational safety guarantees.')">Safety Disclaimer</a></li>
+            <li><a href="javascript:void(0)" onclick="showPolicyModal('Terms & Conditions', 'Users agree to provide accurate vessel dimensions, uphold local waterway navigation rules, and maintain dock mooring safety standards.')">Terms & Conditions</a></li>
+            <li><a href="javascript:void(0)" onclick="showPolicyModal('Privacy Policy', 'All boater vessel registrations, gate PIN codes, and communication logs are kept private and shared only between reserved parties.')">Privacy Policy</a></li>
+            <li><a href="javascript:void(0)" onclick="showPolicyModal('Safety Disclaimer', 'AnchorDrop provides preliminary dimensional clearance checks. Skippers remain fully responsible for low-tide soundings, sea conditions, and navigation.')">Safety Disclaimer</a></li>
           </ul>
         </div>
       </div>
@@ -314,14 +302,14 @@
                 <span>Length: <strong>${dock.maxLength} ft</strong></span>
                 <span>Beam: <strong>${dock.maxBeam} ft</strong></span>
                 <span>Depth: <strong>${dock.minDepth} ft</strong></span>
-                <span>Channel: <strong>${dock.waterway.split(' ')[0]}</strong></span>
+                <span>Channel: <strong>${dock.waterway}</strong></span>
               </div>
               <div class="card-amenities">
                 ${dock.amenities.slice(0, 3).map(a => `<span class="amenity-tag">${a}</span>`).join('')}
               </div>
               <div class="card-footer">
                 <div class="card-price">$${dock.dailyPrice} <span>/ day</span></div>
-                <a href="explore.html" class="btn btn-primary btn-sm">Check Fit & Book</a>
+                <a href="explore.html?dock=${dock.id}" class="btn btn-primary btn-sm">Check Fit & Book</a>
               </div>
             </div>
           </div>

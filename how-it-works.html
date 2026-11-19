@@ -134,27 +134,27 @@
       </p>
 
       <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(260px, 1fr)); gap:20px;">
-        <div style="padding:16px; background:#F8FAFC; border-radius:6px; border-left:4px solid var(--primary);">
+        <div style="padding:16px; background:var(--cream-surface); border-radius:6px; border-left:4px solid var(--gold); border-top:1px solid var(--border-subtle); border-right:1px solid var(--border-subtle); border-bottom:1px solid var(--border-subtle);">
           <h4 style="color:var(--navy); margin-bottom:6px;">1. Length Check (LOA)</h4>
-          <p style="font-size:13px; color:var(--text-dark);">
+          <p style="font-size:13px; color:var(--text-body);">
             <code>Vessel.Length ≤ Dock.MaxLength</code>
             <br><br>
             Ensures the boat does not overhang dangerously into navigation fairways or block neighboring slips.
           </p>
         </div>
 
-        <div style="padding:16px; background:#F8FAFC; border-radius:6px; border-left:4px solid var(--primary);">
+        <div style="padding:16px; background:var(--cream-surface); border-radius:6px; border-left:4px solid var(--gold); border-top:1px solid var(--border-subtle); border-right:1px solid var(--border-subtle); border-bottom:1px solid var(--border-subtle);">
           <h4 style="color:var(--navy); margin-bottom:6px;">2. Beam Check (Width)</h4>
-          <p style="font-size:13px; color:var(--text-dark);">
+          <p style="font-size:13px; color:var(--text-body);">
             <code>Vessel.Beam ≤ Dock.MaxBeam</code>
             <br><br>
             Ensures catamarans and wide cruisers have adequate clearance between pilings and fenders.
           </p>
         </div>
 
-        <div style="padding:16px; background:#F8FAFC; border-radius:6px; border-left:4px solid var(--primary);">
+        <div style="padding:16px; background:var(--cream-surface); border-radius:6px; border-left:4px solid var(--gold); border-top:1px solid var(--border-subtle); border-right:1px solid var(--border-subtle); border-bottom:1px solid var(--border-subtle);">
           <h4 style="color:var(--navy); margin-bottom:6px;">3. Draft Check (Depth)</h4>
-          <p style="font-size:13px; color:var(--text-dark);">
+          <p style="font-size:13px; color:var(--text-body);">
             <code>Vessel.Draft ≤ Dock.MinDepth</code>
             <br><br>
             Ensures the keel or propeller does not strike the seabed at mean low water (MLW) tide conditions.

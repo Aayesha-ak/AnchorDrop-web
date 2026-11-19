@@ -89,9 +89,9 @@
   </main>
 
   <!-- Booking & Compatibility Modal -->
-  <div class="modal-overlay" id="bookingModal">
+  <div class="modal-overlay" id="bookingModal" role="dialog" aria-modal="true" aria-labelledby="modalDockTitle">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeBookingModal()">&times;</button>
+      <button class="modal-close" onclick="closeBookingModal()" aria-label="Close modal">&times;</button>
       <h3 id="modalDockTitle" style="margin-bottom:4px; font-size:22px;">Reserve Dock</h3>
       <p id="modalDockLocation" style="color:var(--text-muted); font-size:14px; margin-bottom:16px;"></p>
 
@@ -131,7 +131,7 @@
           <textarea id="bookingNotes" rows="2" placeholder="e.g. 50A shore power cord needed, late evening arrival..."></textarea>
         </div>
 
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px; flex-wrap:wrap; gap:12px;">
           <div>
             <div style="font-size:12px; color:var(--text-muted);">Estimated Total</div>
             <div id="modalTotalEstimate" style="font-size:20px; font-weight:700; color:var(--navy);">$0</div>
@@ -169,9 +169,29 @@
         renderDocksList();
       });
 
+      // Instant live filtering as user types
+      ["filterLocation", "filterMinLength", "filterMinDepth", "filterMaxPrice"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener("input", renderDocksList);
+      });
+      document.getElementById("filterType").addEventListener("change", renderDocksList);
+
       // Recalculate price on date change
       document.getElementById("bookingStartDate").addEventListener("change", calculateEstimatedTotal);
       document.getElementById("bookingEndDate").addEventListener("change", calculateEstimatedTotal);
+
+      // Close modal on click outside content
+      const bookingModal = document.getElementById("bookingModal");
+      bookingModal.addEventListener("click", (e) => {
+        if (e.target === bookingModal) closeBookingModal();
+      });
+
+      // Auto-open modal if URL query has ?dock=...
+      const urlParams = new URLSearchParams(window.location.search);
+      const targetDockId = urlParams.get("dock");
+      if (targetDockId) {
+        openBookingModal(targetDockId);
+      }
     });
 
     function renderDocksList() {
@@ -225,7 +245,7 @@
             <h3 class="card-title">${dock.name}</h3>
             <p class="card-location">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-              ${dock.location} • <span style="color:var(--primary); font-weight:600;">${dock.waterway}</span>
+              ${dock.location} • <span style="color:var(--sea-blue); font-weight:600;">${dock.waterway}</span>
             </p>
             <div class="card-specs">
               <span>Length: <strong>${dock.maxLength} ft</strong></span>
@@ -260,17 +280,25 @@
         <span>Daily Rate: <strong>$${dock.dailyPrice}</strong></span>
       `;
 
-      // Set default dates: today + 2 days
+      // Set default dates: today + 2 days, with min date set to today
       const today = new Date();
+      const todayStr = today.toISOString().split('T')[0];
       const afterTwoDays = new Date();
       afterTwoDays.setDate(today.getDate() + 2);
-      document.getElementById("bookingStartDate").value = today.toISOString().split('T')[0];
-      document.getElementById("bookingEndDate").value = afterTwoDays.toISOString().split('T')[0];
+      const afterTwoDaysStr = afterTwoDays.toISOString().split('T')[0];
+
+      const startInput = document.getElementById("bookingStartDate");
+      const endInput = document.getElementById("bookingEndDate");
+      startInput.min = todayStr;
+      endInput.min = todayStr;
+      startInput.value = todayStr;
+      endInput.value = afterTwoDaysStr;
 
       // Populate vessels
       const vessels = AnchorDropDB.getVessels();
       const select = document.getElementById("selectVessel");
       const prompt = document.getElementById("vesselPrompt");
+      const submitBtn = document.getElementById("submitBookingBtn");
 
       const currentUser = Auth.getUser();
       if (!currentUser || currentUser.role !== "boater") {
@@ -279,9 +307,16 @@
         prompt.innerHTML = `Logged in as ${currentUser.name} (${currentUser.email})`;
       }
 
-      select.innerHTML = vessels.map(v => `
-        <option value="${v.id}">${v.name} (${v.type} — ${v.length}ft L x ${v.beam}ft B x ${v.draft}ft Draft)</option>
-      `).join('');
+      if (vessels.length === 0) {
+        select.innerHTML = `<option value="">-- No Registered Vessels Found --</option>`;
+        prompt.innerHTML = `<span style="color:var(--danger); font-weight:600;">No vessels saved.</span> Please <a href="boater-dashboard.html" style="font-weight:bold; text-decoration:underline;">add a vessel in the Boater Dashboard</a> before reserving.`;
+        submitBtn.disabled = true;
+      } else {
+        submitBtn.disabled = false;
+        select.innerHTML = vessels.map(v => `
+          <option value="${v.id}">${v.name} (${v.type} — ${v.length}ft L x ${v.beam}ft B x ${v.draft}ft Draft)</option>
+        `).join('');
+      }
 
       runLiveCompatibilityCheck();
       calculateEstimatedTotal();
@@ -312,24 +347,21 @@
       if (result.compatible) {
         compatBox.className = "compat-box compat-success";
         compatBox.innerHTML = `
-          <strong>Vessel is Dimensionally Compatible</strong>
+          <strong>✓ Vessel is Dimensionally Compatible</strong>
           <p style="margin-top:4px; font-size:13px;">
             ${vessel.name}'s length (${vessel.length}ft), beam (${vessel.beam}ft), and draft (${vessel.draft}ft) fit safely within this berth's capacity.
           </p>
         `;
         submitBtn.disabled = false;
-        submitBtn.classList.remove("btn-danger");
-        submitBtn.classList.add("btn-primary");
       } else {
         compatBox.className = "compat-box compat-danger";
         compatBox.innerHTML = `
-          <strong>Dimensional Incompatibility Warning</strong>
+          <strong>⚠ Dimensional Incompatibility Warning</strong>
           <ul>
             ${result.errors.map(err => `<li>${err}</li>`).join('')}
           </ul>
-          <small style="display:block; margin-top:6px;">Warning: Booking an incompatible vessel may result in rejection or damage.</small>
+          <small style="display:block; margin-top:6px;">Caution: Booking an incompatible vessel may result in rejection or damage at low tide.</small>
         `;
-        // Allow request submission but visually warn
         submitBtn.disabled = false;
       }
     }
@@ -364,9 +396,21 @@
       const endDate = document.getElementById("bookingEndDate").value;
       const notes = document.getElementById("bookingNotes").value;
 
+      if (!vessel) {
+        alert("Please register or select a vessel before submitting a booking request.");
+        return;
+      }
+
       if (new Date(endDate) <= new Date(startDate)) {
         alert("Departure date must be after arrival date.");
         return;
+      }
+
+      // Check compatibility and warn user before submitting incompatible request
+      const compat = checkCompatibility(vessel, currentSelectedDock);
+      if (!compat.compatible) {
+        const proceed = confirm("Warning: Your selected vessel exceeds berth limits. Do you still wish to submit this request to the dock host?");
+        if (!proceed) return;
       }
 
       const days = Math.max(1, Math.ceil((new Date(endDate) - new Date(startDate)) / (1000 * 60 * 60 * 24)));
@@ -393,6 +437,10 @@
       alert(`Success! Booking request for ${currentSelectedDock.name} has been submitted with status 'Pending'. You can view it in the Boater Dashboard or switch to the Dock Owner to accept it.`);
 
       if (currentUser && currentUser.role === "boater") {
+        window.location.href = "boater-dashboard.html";
+      }
+    }
+  </script>
         window.location.href = "boater-dashboard.html";
       }
     }

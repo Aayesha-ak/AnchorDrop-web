@@ -31,6 +31,15 @@
 
   <!-- Main Container -->
   <main class="container">
+    <!-- Role Switch Banner if accessing as Dock Owner -->
+    <div id="roleAlertBanner" style="display:none; background:#FFFBEB; border:1px solid #FCD34D; color:#92400E; padding:12px 18px; border-radius:8px; margin-bottom:20px; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+      <span><strong>Account Switch:</strong> You are currently signed in as Dock Host (<span id="roleOwnerName">Robert</span>).</span>
+      <div style="display:flex; gap:8px;">
+        <button class="btn btn-primary btn-sm" onclick="Auth.loginDemoBoater()">Switch to Captain Sarah</button>
+        <a href="owner-dashboard.html" class="btn btn-secondary btn-sm">Return to Owner Dashboard</a>
+      </div>
+    </div>
+
     <!-- Dashboard Header -->
     <div class="dashboard-header">
       <div>
@@ -116,9 +125,9 @@
   </main>
 
   <!-- ADD / EDIT VESSEL MODAL -->
-  <div class="modal-overlay" id="vesselModal">
+  <div class="modal-overlay" id="vesselModal" role="dialog" aria-modal="true" aria-labelledby="vesselModalTitle">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeVesselModal()">&times;</button>
+      <button class="modal-close" onclick="closeVesselModal()" aria-label="Close modal">&times;</button>
       <h3 id="vesselModalTitle" style="margin-bottom:16px;">Add New Vessel</h3>
       <form id="vesselForm" onsubmit="handleSaveVessel(event)">
         <input type="hidden" id="vesselId">
@@ -168,10 +177,10 @@
   </div>
 
   <!-- REPORT DELAY MODAL -->
-  <div class="modal-overlay" id="delayModal">
+  <div class="modal-overlay" id="delayModal" role="dialog" aria-modal="true" aria-labelledby="delayModalTitle">
     <div class="modal-content">
-      <button class="modal-close" onclick="closeDelayModal()">&times;</button>
-      <h3 style="margin-bottom:12px;">Report Arrival Delay</h3>
+      <button class="modal-close" onclick="closeDelayModal()" aria-label="Close modal">&times;</button>
+      <h3 id="delayModalTitle" style="margin-bottom:12px;">Report Arrival Delay</h3>
       <p style="color:var(--text-muted); font-size:14px; margin-bottom:18px;">
         Inform the dock host and harbormaster of tide delays, weather reroutes, or mechanical pauses.
       </p>
@@ -212,11 +221,26 @@
       // Ensure boater session
       let user = Auth.getUser();
       if (!user) {
-        // Auto-login as Captain Sarah for seamless college demo
         user = { name: "Captain Sarah", email: "sarah@boater.com", role: "boater" };
         Auth.login(user);
+      } else if (user.role === "owner") {
+        const banner = document.getElementById("roleAlertBanner");
+        if (banner) {
+          banner.style.display = "flex";
+          document.getElementById("roleOwnerName").innerText = user.name;
+        }
       }
       document.getElementById("welcomeGreeting").innerText = `Welcome aboard, ${user.name}`;
+
+      // Close modals on outside click
+      ["vesselModal", "delayModal"].forEach(id => {
+        const m = document.getElementById(id);
+        if (m) {
+          m.addEventListener("click", (e) => {
+            if (e.target === m) m.classList.remove("open");
+          });
+        }
+      });
 
       renderVessels();
       renderBookings();

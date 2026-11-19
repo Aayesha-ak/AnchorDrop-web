@@ -140,8 +140,7 @@ const DEFAULT_BOOKINGS = [
 // ============================================================================
 const AnchorDropDB = {
   init() {
-    const rawDocks = localStorage.getItem("anchordrop_docks");
-    if (!rawDocks || rawDocks.includes("hero-marina.jpeg") || rawDocks.includes("dock-private.jpg") || rawDocks.includes("istockphoto-937731582")) {
+    if (!localStorage.getItem("anchordrop_docks")) {
       localStorage.setItem("anchordrop_docks", JSON.stringify(DEFAULT_DOCKS));
     }
     if (!localStorage.getItem("anchordrop_vessels")) {
@@ -149,6 +148,13 @@ const AnchorDropDB = {
     }
     if (!localStorage.getItem("anchordrop_bookings")) {
       localStorage.setItem("anchordrop_bookings", JSON.stringify(DEFAULT_BOOKINGS));
+    }
+    if (!localStorage.getItem("anchordrop_registered_users")) {
+      const defaultUsers = [
+        { email: "sarah@boater.com", name: "Captain Sarah", role: "boater" },
+        { email: "robert@marina.com", name: "Marina Bay Harbor (Robert)", role: "owner" }
+      ];
+      localStorage.setItem("anchordrop_registered_users", JSON.stringify(defaultUsers));
     }
   },
 
@@ -232,17 +238,15 @@ const AnchorDropDB = {
     const bookings = this.getBookings();
     const b = bookings.find(item => item.id === id);
     if (b) {
-      // If accepting, verify overlapping accepted bookings for this berth
+      // If accepting, verify overlapping accepted bookings for this berth.
+      // Same-day turnover (e.g. check-out 11:00 AM, check-in 1:00 PM) is permitted:
+      // An overlap occurs only if (b.startDate < other.endDate && b.endDate > other.startDate).
       if (newStatus === "Accepted") {
         const hasOverlap = bookings.some(other => 
           other.id !== id &&
           other.berthId === b.berthId &&
           other.status === "Accepted" &&
-          (
-            (b.startDate >= other.startDate && b.startDate <= other.endDate) ||
-            (b.endDate >= other.startDate && b.endDate <= other.endDate) ||
-            (b.startDate <= other.startDate && b.endDate >= other.endDate)
-          )
+          (b.startDate < other.endDate && b.endDate > other.startDate)
         );
         if (hasOverlap) {
           alert("Schedule Conflict: Another booking is already accepted for this berth on overlapping dates!");
@@ -263,8 +267,20 @@ const AnchorDropDB = {
       b.delayReport = {
         newEta: newEta,
         note: note || "No additional note.",
-        reportedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+        reportedAt: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        acknowledged: false
       };
+      localStorage.setItem("anchordrop_bookings", JSON.stringify(bookings));
+      return true;
+    }
+    return false;
+  },
+
+  acknowledgeDelay(bookingId) {
+    const bookings = this.getBookings();
+    const b = bookings.find(item => item.id === bookingId);
+    if (b && b.delayReport) {
+      b.delayReport.acknowledged = true;
       localStorage.setItem("anchordrop_bookings", JSON.stringify(bookings));
       return true;
     }
@@ -283,6 +299,10 @@ const AnchorDropDB = {
  */
 function checkCompatibility(vessel, dock) {
   const errors = [];
+
+  if (!vessel || !dock) {
+    return { compatible: false, errors: ["Missing vessel or dock specification."] };
+  }
 
   if (Number(vessel.length) > Number(dock.maxLength)) {
     errors.push(`Vessel Length (${vessel.length} ft) exceeds berth capacity of ${dock.maxLength} ft.`);
@@ -313,6 +333,23 @@ const Auth = {
 
   login(user) {
     localStorage.setItem("anchordrop_user", JSON.stringify(user));
+  },
+
+  getRegisteredUsers() {
+    const list = localStorage.getItem("anchordrop_registered_users");
+    return list ? JSON.parse(list) : [];
+  },
+
+  register(user) {
+    const users = this.getRegisteredUsers();
+    const idx = users.findIndex(u => u.email.toLowerCase() === user.email.toLowerCase());
+    if (idx >= 0) {
+      users[idx] = user;
+    } else {
+      users.push(user);
+    }
+    localStorage.setItem("anchordrop_registered_users", JSON.stringify(users));
+    this.login(user);
   },
 
   logout() {
@@ -365,7 +402,7 @@ function renderNavbar() {
     }
     html += `
       <span class="nav-user-badge">${user.name.split(' ')[0]} (${user.role})</span>
-      <a href="javascript:void(0)" onclick="Auth.logout()" style="color:#F87171;">Sign Out</a>
+      <a href="javascript:void(0)" onclick="Auth.logout()" style="color:#F87171; font-weight:600;">Sign Out</a>
     `;
   } else {
     html += `<a href="login.html" class="${currentPath === 'login.html' ? 'active' : ''}">Sign In</a>`;
@@ -374,10 +411,49 @@ function renderNavbar() {
   navContainer.innerHTML = html;
 }
 
+// Global Policy Modal Helper (eliminates dated javascript:alert)
+function showPolicyModal(title, message) {
+  let modal = document.getElementById("globalPolicyModal");
+  if (!modal) {
+    modal = document.createElement("div");
+    modal.id = "globalPolicyModal";
+    modal.className = "modal-overlay";
+    modal.innerHTML = `
+      <div class="modal-content" style="max-width: 500px;">
+        <button class="modal-close" onclick="closePolicyModal()" aria-label="Close modal">&times;</button>
+        <h3 id="policyModalTitle" style="color:var(--navy); font-size:20px; margin-bottom:12px;"></h3>
+        <div id="policyModalBody" style="color:var(--text-body); font-size:14px; line-height:1.6; margin-bottom:20px;"></div>
+        <div style="text-align:right;">
+          <button class="btn btn-primary btn-sm" onclick="closePolicyModal()">Understood</button>
+        </div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.addEventListener("click", (e) => {
+      if (e.target === modal) closePolicyModal();
+    });
+  }
+  document.getElementById("policyModalTitle").innerText = title;
+  document.getElementById("policyModalBody").innerHTML = message;
+  modal.classList.add("open");
+}
+
+function closePolicyModal() {
+  const modal = document.getElementById("globalPolicyModal");
+  if (modal) modal.classList.remove("open");
+}
+
 // Auto-run on load
 document.addEventListener("DOMContentLoaded", () => {
   AnchorDropDB.init();
   renderNavbar();
+
+  // Close modals on Escape key
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      document.querySelectorAll(".modal-overlay.open").forEach(m => m.classList.remove("open"));
+    }
+  });
 });
 
 // Expose globally for console inspection & debugging
@@ -385,5 +461,7 @@ if (typeof window !== "undefined") {
   window.AnchorDropDB = AnchorDropDB;
   window.checkCompatibility = checkCompatibility;
   window.Auth = Auth;
+  window.showPolicyModal = showPolicyModal;
+  window.closePolicyModal = closePolicyModal;
 }
 
